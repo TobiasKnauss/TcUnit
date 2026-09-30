@@ -140,6 +140,15 @@ CASE ExpectedOrActualTypeClass OF
     IBaseLibrary.TypeClass.TYPE_LTIME :
         F_IsAnyEqualToUnionValue := ExpectedOrActual.ltimeExpectedOrActual = AnyExpectedOrActual.ltimeExpectedOrActual;
 
+    IBaseLibrary.TypeClass.TYPE_LDATE :
+        F_IsAnyEqualToUnionValue := ExpectedOrActual.ldateExpectedOrActual = AnyExpectedOrActual.ldateExpectedOrActual;
+
+    IBaseLibrary.TypeClass.TYPE_LDATEANDTIME :
+        F_IsAnyEqualToUnionValue := ExpectedOrActual.ldateandtimeExpectedOrActual = AnyExpectedOrActual.ldateandtimeExpectedOrActual;
+
+    IBaseLibrary.TypeClass.TYPE_LTIMEOFDAY :
+        F_IsAnyEqualToUnionValue := ExpectedOrActual.ltimeofdayExpectedOrActual = AnyExpectedOrActual.ltimeofdayExpectedOrActual;
+
     IBaseLibrary.TypeClass.TYPE_BITCONST :
         F_IsAnyEqualToUnionValue := FALSE;
 

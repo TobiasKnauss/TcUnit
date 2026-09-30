@@ -2308,12 +2308,18 @@ VAR
     dwordActual : DWORD;
     intExpected : INT;
     intActual : INT;
+    ldateExpected : LDATE;
+    ldateActual : LDATE;
+    ldateAndTimeExpected : LDATE_AND_TIME;
+    ldateAndTimeActual : LDATE_AND_TIME;
     lintExpected : LINT;
     lintActual : LINT;
     lrealExpected : LREAL;
     lrealActual : LREAL;
     ltimeExpected : LTIME;
     ltimeActual : LTIME;
+    ltimeofdayExpected : LTIME_OF_DAY;
+    ltimeofdayActual : LTIME_OF_DAY;
     lwordExpected : LWORD;
     lwordActual : LWORD;
     realExpected : REAL;
@@ -2453,6 +2459,22 @@ IF NOT DataTypesNotEquals AND NOT DataSizeNotEquals THEN
         RETURN;
     END_IF
 
+    // LDATE
+    IF UDINT_TO_INT(Expected.TypeClass) = IBaseLibrary.TypeClass.TYPE_LDATE THEN
+        MEMCPY(destAddr := ADR(ldateExpected), srcAddr := Expected.pValue, n := SIZEOF(LDATE));
+        MEMCPY(destAddr := ADR(ldateActual), srcAddr := Actual.pValue, n := SIZEOF(LDATE));
+        AssertEquals_LDATE(Expected := ldateExpected, Actual := ldateActual, Message := Message);
+        RETURN;
+    END_IF
+
+    // LDATE_AND_TIME
+    IF UDINT_TO_INT(Expected.TypeClass) = IBaseLibrary.TypeClass.TYPE_LDATEANDTIME THEN
+        MEMCPY(destAddr := ADR(ldateAndTimeExpected), srcAddr := Expected.pValue, n := SIZEOF(LDATE_AND_TIME));
+        MEMCPY(destAddr := ADR(ldateAndTimeActual), srcAddr := Actual.pValue, n := SIZEOF(LDATE_AND_TIME));
+        AssertEquals_LDATE_AND_TIME(Expected := ldateAndTimeExpected, Actual := ldateAndTimeActual, Message := Message);
+        RETURN;
+    END_IF
+
     // LINT
     IF UDINT_TO_INT(Expected.TypeClass) = IBaseLibrary.TypeClass.TYPE_LINT THEN
         MEMCPY(destAddr := ADR(lintExpected), srcAddr := Expected.pValue, n := SIZEOF(LINT));
@@ -2474,6 +2496,14 @@ IF NOT DataTypesNotEquals AND NOT DataSizeNotEquals THEN
         MEMCPY(destAddr := ADR(ltimeExpected), srcAddr := Expected.pValue, n := SIZEOF(LTIME));
         MEMCPY(destAddr := ADR(ltimeActual), srcAddr := Actual.pValue, n := SIZEOF(LTIME));
         AssertEquals_LTIME(Expected := ltimeExpected, Actual := ltimeActual, Message := Message);
+        RETURN;
+    END_IF
+
+    // LTIME_OF_DAY
+    IF UDINT_TO_INT(Expected.TypeClass) = IBaseLibrary.TypeClass.TYPE_LTIMEOFDAY THEN
+        MEMCPY(destAddr := ADR(ltimeofdayExpected), srcAddr := Expected.pValue, n := SIZEOF(LTIME_OF_DAY));
+        MEMCPY(destAddr := ADR(ltimeofdayActual), srcAddr := Actual.pValue, n := SIZEOF(LTIME_OF_DAY));
+        AssertEquals_LTIME_OF_DAY(Expected := ltimeofdayExpected, Actual := ltimeofdayActual, Message := Message);
         RETURN;
     END_IF
 
@@ -2938,6 +2968,86 @@ IF NOT AlreadyReported AND Expected <> Actual THEN
 END_IF]]></ST>
       </Implementation>
     </Method>
+    <Method Name="AssertEquals_LDATE" Id="{f30e660f-d17e-069e-0de5-76d974587ee3}">
+      <Declaration><![CDATA[// Asserts that two LDATEs are equal. If they are not, an assertion error is created.
+METHOD PUBLIC AssertEquals_LDATE
+VAR_INPUT
+    Expected : LDATE; // LDATE expected value
+    Actual : LDATE; // LDATE actual value
+    Message : T_MaxString; // The identifying message for the assertion error
+END_VAR
+VAR
+    TestInstancePath : T_MaxString;
+    AlreadyReported : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GVL_TcUnit.IgnoreCurrentTest OR GVL_TcUnit.CurrentTestIsFinished THEN
+    RETURN;
+END_IF
+
+TestInstancePath := AddTestNameToInstancePath(TestInstancePath := FindTestSuiteInstancePath());
+
+AssertResults.ReportResult(ExpectedSize := SIZEOF(Expected),
+                           ExpectedTypeClass := IBaseLibrary.TypeClass.TYPE_LDATE,
+                           ExpectedValue := ADR(Expected),
+                           ActualSize := SIZEOF(Actual),
+                           ActualTypeClass := IBaseLibrary.TypeClass.TYPE_LDATE,
+                           ActualValue := ADR(Actual),
+                           Message := Message,
+                           TestInstancePath := TestInstancePath,
+                           AlreadyReported => AlreadyReported);
+
+IF NOT AlreadyReported AND Expected <> Actual THEN
+    SetTestFailed(AssertionType := E_AssertionType.Type_LDATE,
+                  AssertionMessage := Message);
+
+    AssertMessageFormatter.LogAssertFailure(Expected := LDATE_TO_STRING(Expected),
+                                            Actual := LDATE_TO_STRING(Actual),
+                                            Message := Message,
+                                            TestInstancePath := TestInstancePath);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AssertEquals_LDATE_AND_TIME" Id="{b00d3267-d13a-0271-2c44-25347b6f0c78}">
+      <Declaration><![CDATA[// Asserts that two LDATE_AND_TIMEs are equal. If they are not, an assertion error is created.
+METHOD PUBLIC AssertEquals_LDATE_AND_TIME
+VAR_INPUT
+    Expected : LDATE_AND_TIME; // LDATE_AND_TIME expected value
+    Actual : LDATE_AND_TIME; // LDATE_AND_TIME actual value
+    Message : T_MaxString; // The identifying message for the assertion error
+END_VAR
+VAR
+    TestInstancePath : T_MaxString;
+    AlreadyReported : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GVL_TcUnit.IgnoreCurrentTest OR GVL_TcUnit.CurrentTestIsFinished THEN
+    RETURN;
+END_IF
+
+TestInstancePath := AddTestNameToInstancePath(TestInstancePath := FindTestSuiteInstancePath());
+
+AssertResults.ReportResult(ExpectedSize := SIZEOF(Expected),
+                           ExpectedTypeClass := IBaseLibrary.TypeClass.TYPE_LDATEANDTIME,
+                           ExpectedValue := ADR(Expected),
+                           ActualSize := SIZEOF(Actual),
+                           ActualTypeClass := IBaseLibrary.TypeClass.TYPE_LDATEANDTIME,
+                           ActualValue := ADR(Actual),
+                           Message := Message,
+                           TestInstancePath := TestInstancePath,
+                           AlreadyReported => AlreadyReported);
+
+IF NOT AlreadyReported AND Expected <> Actual THEN
+    SetTestFailed(AssertionType := E_AssertionType.Type_LDATE_AND_TIME,
+                  AssertionMessage := Message);
+
+    AssertMessageFormatter.LogAssertFailure(Expected := LDT_TO_STRING(Expected),
+                                            Actual := LDT_TO_STRING(Actual),
+                                            Message := Message,
+                                            TestInstancePath := TestInstancePath);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
     <Method Name="AssertEquals_LINT" Id="{9dc34017-cbc7-41a9-83a2-941f39cc7271}">
       <Declaration><![CDATA[// Asserts that two LINTs are equal. If they are not, an assertion error is created.
 METHOD PUBLIC AssertEquals_LINT
@@ -3068,6 +3178,46 @@ IF NOT AlreadyReported AND Expected <> Actual THEN
 
     AssertMessageFormatter.LogAssertFailure(Expected := LTIME_TO_STRING(Expected),
                                             Actual := LTIME_TO_STRING(Actual),
+                                            Message := Message,
+                                            TestInstancePath := TestInstancePath);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AssertEquals_LTIME_OF_DAY" Id="{25d1fc45-5587-0c09-0261-4296c7ecf985}">
+      <Declaration><![CDATA[// Asserts that two LTIME_OF_DAYs are equal. If they are not, an assertion error is created.
+METHOD PUBLIC AssertEquals_LTIME_OF_DAY
+VAR_INPUT
+    Expected : LTIME_OF_DAY; // LTIME_OF_DAY expected value
+    Actual : LTIME_OF_DAY; // LTIME_OF_DAY actual value
+    Message : T_MaxString; // The identifying message for the assertion error
+END_VAR
+VAR
+    TestInstancePath : T_MaxString;
+    AlreadyReported : BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF GVL_TcUnit.IgnoreCurrentTest OR GVL_TcUnit.CurrentTestIsFinished THEN
+    RETURN;
+END_IF
+
+TestInstancePath := AddTestNameToInstancePath(TestInstancePath := FindTestSuiteInstancePath());
+
+AssertResults.ReportResult(ExpectedSize := SIZEOF(Expected),
+                           ExpectedTypeClass := IBaseLibrary.TypeClass.TYPE_LTIMEOFDAY,
+                           ExpectedValue := ADR(Expected),
+                           ActualSize := SIZEOF(Actual),
+                           ActualTypeClass := IBaseLibrary.TypeClass.TYPE_LTIMEOFDAY,
+                           ActualValue := ADR(Actual),
+                           Message := Message,
+                           TestInstancePath := TestInstancePath,
+                           AlreadyReported => AlreadyReported);
+
+IF NOT AlreadyReported AND Expected <> Actual THEN
+    SetTestFailed(AssertionType := E_AssertionType.Type_LTIME_OF_DAY,
+                  AssertionMessage := Message);
+
+    AssertMessageFormatter.LogAssertFailure(Expected := LTOD_TO_STRING(Expected),
+                                            Actual := LTOD_TO_STRING(Actual),
                                             Message := Message,
                                             TestInstancePath := TestInstancePath);
 END_IF]]></ST>
